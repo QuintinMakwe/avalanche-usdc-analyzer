@@ -1,23 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ethers } from 'ethers';
 import { BlockchainService } from './blockchain.service';
+import { TransferEvent, TransferStats } from '../interface/blockchain.interface';
 
-interface TransferEvent {
-  from: string;
-  to: string;
-  value: string;
-  blockNumber: number;
-  transactionHash: string;
-  timestamp?: number;
-}
-
-interface TransferStats {
-  totalTransfers: number;
-  totalVolume: string;
-  uniqueSenders: number;
-  uniqueReceivers: number;
-  averageTransferAmount: string;
-}
 
 @Injectable()
 export class AvalancheService {
@@ -37,6 +22,8 @@ export class AvalancheService {
     'event Transfer(address indexed from, address indexed to, uint256 value)'
   ];
 
+  private readonly BATCH_SIZE = 2000; // Number of blocks to query at once
+
   constructor(private readonly blockchainService: BlockchainService) {
     this.provider = this.blockchainService.getProvider('avalanche');
     this.usdcContract = this.blockchainService.createContract(
@@ -47,32 +34,45 @@ export class AvalancheService {
     this.logger.log('Initialized Avalanche USDC service');
   }
 
+  /**
+   * getUSDCTransfers with batch processing
+   */
   async getUSDCTransfers(fromBlock: number, toBlock: number): Promise<TransferEvent[]> {
     try {
-      const filter = {
-        address: this.USDC_CONTRACT_ADDRESS,
-        fromBlock,
-        toBlock,
-        topics: [this.TRANSFER_TOPIC],
-      };
-
-      const logs = await this.blockchainService.getLogs(this.provider, filter);
-      const transferPromises = logs.map(async (log) => {
-        const parsedLog = this.usdcContract.interface.parseLog(log);
-        const block = await this.blockchainService.getBlock(this.provider, log.blockNumber);
-
-        return {
-          from: parsedLog.args.from,
-          to: parsedLog.args.to,
-          value: ethers.formatUnits(parsedLog.args.value, this.USDC_DECIMALS),
-          blockNumber: log.blockNumber,
-          transactionHash: log.transactionHash,
-          timestamp: block.timestamp
+      const transfers: TransferEvent[] = [];
+      
+      for (let currentBlock = fromBlock; currentBlock <= toBlock; currentBlock += this.BATCH_SIZE) {
+        const batchToBlock = Math.min(currentBlock + this.BATCH_SIZE - 1, toBlock);
+        
+        const filter = {
+          address: this.USDC_CONTRACT_ADDRESS,
+          fromBlock: currentBlock,
+          toBlock: batchToBlock,
+          topics: [this.TRANSFER_TOPIC],
         };
-      });
 
-      const transfers = await Promise.all(transferPromises);
-      this.logger.log(`Fetched ${transfers.length} USDC transfer events`);
+        const logs = await this.blockchainService.getLogs(this.provider, filter);
+        const batchTransfers = await Promise.all(
+          logs.map(async (log) => {
+            const parsedLog = this.usdcContract.interface.parseLog(log);
+            const block = await this.blockchainService.getBlock(this.provider, log.blockNumber);
+            
+            return {
+              from: parsedLog.args.from,
+              to: parsedLog.args.to,
+              value: ethers.formatUnits(parsedLog.args.value, this.USDC_DECIMALS),
+              blockNumber: log.blockNumber,
+              transactionHash: log.transactionHash,
+              timestamp: block.timestamp
+            };
+          })
+        );
+        
+        transfers.push(...batchTransfers);
+        this.logger.log(`Processed blocks ${currentBlock} to ${batchToBlock}`);
+      }
+
+      this.logger.log(`Fetched total ${transfers.length} USDC transfer events`);
       return transfers;
     } catch (error) {
       this.logger.error('Error fetching USDC transfers', error);
@@ -166,5 +166,26 @@ export class AvalancheService {
       this.logger.error('Error fetching batch USDC balances', error);
       throw new Error(`Failed to fetch batch USDC balances: ${error.message}`);
     }
+  }
+
+  /**
+   * New method to handle real-time block monitoring
+   */
+  async monitorBlocks(callback: (transfers: TransferEvent[]) => void): Promise<void> {
+    let lastProcessedBlock = await this.getLatestBlockNumber();
+    
+    this.provider.on('block', async (blockNumber: number) => {
+      try {
+        if (blockNumber > lastProcessedBlock) {
+          const transfers = await this.getUSDCTransfers(lastProcessedBlock + 1, blockNumber);
+          if (transfers.length > 0) {
+            callback(transfers);
+          }
+          lastProcessedBlock = blockNumber;
+        }
+      } catch (error) {
+        this.logger.error(`Error processing block ${blockNumber}`, error);
+      }
+    });
   }
 }
