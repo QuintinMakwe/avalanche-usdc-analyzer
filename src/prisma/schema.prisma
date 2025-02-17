@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model USDCTransfer {
+  id              String   @id @default(uuid())
+  transactionHash String   @unique
+  blockNumber     BigInt
+  fromAddress     String
+  toAddress       String
+  amount          String   // Using String to handle large numbers safely
+  timestamp       DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Indexes for faster querying
+  @@index([fromAddress])
+  @@index([toAddress])
+  @@index([timestamp])
+  @@index([blockNumber])
+}
+
+model AddressStats {
+  address         String   @id
+  totalSent       String   // Using String for large numbers
+  totalReceived   String
+  transactionCount Int
+  lastActive      DateTime
+  updatedAt       DateTime @updatedAt
+
+  @@index([totalSent])
+  @@index([totalReceived])
+  @@index([transactionCount])
+}
+
+model BlockCheckpoint {
+  id          String   @id @default(uuid())
+  lastBlock   BigInt
+  updatedAt   DateTime @updatedAt
+}
+
+// For storing contract addresses and configurations
+model Config {
+  key         String   @id
+  value       String
+  updatedAt   DateTime @updatedAt
+}
