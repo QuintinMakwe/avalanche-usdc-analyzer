@@ -7,28 +7,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model USDCTransfer {
+model TokenTransfer {
   id              String   @id @default(uuid())
-  transactionHash String   @unique
+  transactionHash String
+  logIndex        Int
   blockNumber     BigInt
   fromAddress     String
   toAddress       String
-  amount          String   // Using String to handle large numbers safely
+  amount          String
   timestamp       DateTime
+  tokenAddress    String
+  symbol          String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  // Indexes for faster querying
+  @@unique([transactionHash, logIndex])
   @@index([fromAddress])
   @@index([toAddress])
-  @@index([timestamp])
-  @@index([blockNumber])
+  @@index([tokenAddress])
+}
+
+model AddressTokenStats {
+  address         String
+  tokenAddress    String
+  symbol          String
+  totalSent       Decimal  @default(0)
+  totalReceived   Decimal  @default(0)
+  transactionCount Int
+  lastActive      DateTime
+
+  @@id([address, tokenAddress])
+  @@index([tokenAddress])
 }
 
 model AddressStats {
   address         String   @id
-  totalSent       String   // Using String for large numbers
-  totalReceived   String
+  totalSent       Decimal  @default(0)
+  totalReceived   Decimal  @default(0)
   transactionCount Int
   lastActive      DateTime
   updatedAt       DateTime @updatedAt
