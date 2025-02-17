@@ -1,15 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { BlockchainService } from './blockchain.service';
-import { AvalancheService } from './avalanche.service';
+import { BlockchainService } from './services/blockchain.service';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-  ],
-  providers: [BlockchainService, AvalancheService],
+  imports: [ConfigModule],
+  providers: [BlockchainService],
   exports: [BlockchainService],
 })
-export class BlockchainModule {}
+export class BlockchainModule {} 

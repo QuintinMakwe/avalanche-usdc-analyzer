@@ -1,9 +1,12 @@
+import { ethers } from 'ethers';
+
 export interface TransferEvent {
   from: string;
   to: string;
   value: string;
   blockNumber: number;
   transactionHash: string;
+  logIndex: number;
   timestamp?: number;
 }
 
@@ -15,10 +18,16 @@ export interface TransferStats {
   averageTransferAmount: string;
 }
 
-export interface BlockchainConfig {
+export interface EVMConfig {
   rpcUrl: string;
+  chainId: string;
   contractAddress: string;
-  startBlock?: number;
-}
+  contractABI: string[];
+  decimals: number;
+} 
 
-export type NetworkType = 'avalanche' 
+export interface TokenConfig {
+  address: string;
+  symbol: string;
+  decimals: number;
+}
