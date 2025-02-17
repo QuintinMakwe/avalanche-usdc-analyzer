@@ -1,5 +1,5 @@
 # Development stage
-FROM node:20.9.0-alpine3.18 as development
+FROM node:20.11.1-alpine3.18 as development
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN apk update && apk add curl && apk add bash
 
 # Production stage
 
-FROM node:20.9.0-alpine3.18 as production
+FROM node:20.11.1-alpine3.18 as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}

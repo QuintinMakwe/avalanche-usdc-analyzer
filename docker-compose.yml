@@ -55,7 +55,10 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    command: yarn run start:dev
+    command: >
+      sh -c "npx prisma generate --schema ./src/prisma/schema.prisma
+      && npx prisma migrate deploy --schema ./src/prisma/schema.prisma
+      && yarn run start:dev"
     networks:
       - app-network
     ports:
