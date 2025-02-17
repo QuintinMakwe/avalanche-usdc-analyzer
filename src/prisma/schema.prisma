@@ -39,29 +39,3 @@ model AddressTokenStats {
   @@id([address, tokenAddress])
   @@index([tokenAddress])
 }
-
-model AddressStats {
-  address         String   @id
-  totalSent       Decimal  @default(0)
-  totalReceived   Decimal  @default(0)
-  transactionCount Int
-  lastActive      DateTime
-  updatedAt       DateTime @updatedAt
-
-  @@index([totalSent])
-  @@index([totalReceived])
-  @@index([transactionCount])
-}
-
-model BlockCheckpoint {
-  id          String   @id @default(uuid())
-  lastBlock   BigInt
-  updatedAt   DateTime @updatedAt
-}
-
-// For storing contract addresses and configurations
-model Config {
-  key         String   @id
-  value       String
-  updatedAt   DateTime @updatedAt
-}
