@@ -17,4 +17,5 @@ export const REDIS_KEYS = {
   MONITORING_STATE: 'avalanche:monitoring:state',
   LAST_INDEXED_BLOCK: 'avalanche:indexer:lastBlock',
   CATCH_UP_STATE: 'avalanche:indexer:catchingUp',
+  LAST_INDEXED_BLOCK_KEY: 'avalanche:last_indexed_block'
 } as const;

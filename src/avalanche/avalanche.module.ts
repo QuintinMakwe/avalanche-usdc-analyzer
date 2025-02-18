@@ -5,9 +5,10 @@ import { AvalancheMonitorService } from './services/avalanche-monitor.service';
 import { AvalancheIndexerService } from './services/avalanche-indexer.service';
 import { AvalancheAggregationService } from './services/avalanche-aggregation.service';
 import { AvalancheController } from './controllers/avalanche.controller';
+import { RedisModule } from '../redis/redis.module';
 
 @Module({
-  imports: [BlockchainModule, PrismaModule],
+  imports: [BlockchainModule, PrismaModule, RedisModule],
   controllers: [AvalancheController],
   providers: [
     AvalancheMonitorService,
