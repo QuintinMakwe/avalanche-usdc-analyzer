@@ -1,4 +1,4 @@
-import { Controller, Get, Query, ParseIntPipe, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Query, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { AvalancheAggregationService } from '../services/avalanche-aggregation.service';
 
@@ -41,15 +41,20 @@ export class AvalancheController {
     @Query('startTime') startTime: Date,
     @Query('endTime') endTime: Date,
     @Query('tokenAddress') tokenAddress: string = this.USDC_ADDRESS,
-    @Query('page', ParseIntPipe) page: number = 1,
-    @Query('limit', ParseIntPipe) limit: number = 10
+    @Query('page') rawPage?: string,
+    @Query('limit') rawLimit?: string
   ) {
     if (startTime >= endTime) {
       throw new BadRequestException('startTime must be before endTime');
     }
+
+    const page = rawPage ? parseInt(rawPage) : 1;
+    const limit = rawLimit ? parseInt(rawLimit) : 10;
+
     if (page < 1 || limit < 1) {
       throw new BadRequestException('Invalid pagination parameters');
     }
+
     const data = await this.aggregationService.getTopAccounts(startTime, endTime, tokenAddress, { page, limit });
     return {
       data: data?.accounts,
@@ -68,15 +73,20 @@ export class AvalancheController {
   async getTransfersByTimeRange(
     @Query('startTime') startTime: Date,
     @Query('endTime') endTime: Date,
-    @Query('page', ParseIntPipe) page: number = 1,
-    @Query('limit', ParseIntPipe) limit: number = 10
+    @Query('page') rawPage?: string,
+    @Query('limit') rawLimit?: string
   ) {
     if (startTime >= endTime) {
       throw new BadRequestException('startTime must be before endTime');
     }
+
+    const page = rawPage ? parseInt(rawPage) : 1;
+    const limit = rawLimit ? parseInt(rawLimit) : 10;
+
     if (page < 1 || limit < 1) {
       throw new BadRequestException('Invalid pagination parameters');
     }
+
     const data = await this.aggregationService.getTransfersByTimeRange(startTime, endTime, { page, limit });
     return {
       data: data?.transfers,
