@@ -208,6 +208,7 @@ graph TD
 However, the monitoring service could be better designed to be completely fault tolerant and scalable. Below is a diagram of the monitoring service with more time, would be ideal to implement. 
 
 Indexing  Architecture 
+ ```mermaid
 graph TD
     A[Server Start] --> B{Last Block in Redis?}
     B -->|Yes| C[Start Catch-up Process]
