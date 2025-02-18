@@ -179,14 +179,17 @@ graph TD
 
 ```mermaid
 graph TD
-    A[Server Start] -->|Check| B{Last Block in Redis?}
+    A[Server Start] --> B{Last Block in Redis?}
     B -->|Yes| C[Start Catch-up Process]
     B -->|No| D[Start Fresh Monitoring]
+    
     C --> E[Historical Indexing]
     D --> F[Real-time Subscription]
     C --> F
+    
     E -->|Updates| G[(Redis)]
     F -->|Updates| G
+    
     H[Transfer Event] --> I{Already Indexed?}
     I -->|Yes| J[Skip]
     I -->|No| K[Index Transfer]
