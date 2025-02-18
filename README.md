@@ -202,29 +202,6 @@ graph TD
 5. Aggregation Service queries PostgreSQL for analytics
 6. API Layer serves client requests through Aggregation Service
 
-However, the monitoring service could be better designed to be completely fault tolerant and scalable. Below is a diagram of the monitoring service with more time, would be ideal to implement. 
-
-### Indexing Architecture 
-
-```mermaid
-graph TD
-    A[Server Start] --> B{Last Block in Redis?}
-    B -->|Yes| C[Start Catch-up Process]
-    B -->|No| D[Start Fresh Monitoring]
-    
-    C --> E[Historical Indexing]
-    D --> F[Real-time Subscription]
-    C --> F
-    
-    E -->|Updates| G[(Redis)]
-    F -->|Updates| G
-    
-    H[Transfer Event] --> I{Already Indexed?}
-    I -->|Yes| J[Skip]
-    I -->|No| K[Index Transfer]
-    K --> L[Update Last Block]
-    L --> G
-```
 
 ### Technologies Used
 - NestJS (Backend Framework)
