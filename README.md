@@ -166,13 +166,32 @@ Response:
 
 ```mermaid
 graph TD
-    A[Monitor Service] -->|1. Subscribe to Events| B[Blockchain]
-    A -->|2. Transfer Events| C[Indexer Service]
-    C -->|3. Store Transfers| D[(PostgreSQL)]
-    C -->|4. Update State| E[(Redis)]
-    F[Aggregation Service] -->|5. Query Data| D
-    G[API Layer] -->|6. Request Stats| F
-    G -->|7. Response| H[Client]
+    A[Monitor Service] -->|Subscribe to Events| B[Blockchain]
+    A -->|Transfer Events| C[Indexer Service]
+    C -->|Store State| D[(Redis)]
+    C -->|Store Data| E[(PostgreSQL)]
+    F[Aggregation Service] -->|Query Data| E
+    G[API Layer] -->|Request Stats| F
+    G -->|Response| H[Client]
+```
+
+### Indexing Process
+
+```mermaid
+graph TD
+    A[Server Start] -->|Check| B{Last Block in Redis?}
+    B -->|Yes| C[Start Catch-up Process]
+    B -->|No| D[Start Fresh Monitoring]
+    C --> E[Historical Indexing]
+    D --> F[Real-time Subscription]
+    C --> F
+    E -->|Updates| G[(Redis)]
+    F -->|Updates| G
+    H[Transfer Event] --> I{Already Indexed?}
+    I -->|Yes| J[Skip]
+    I -->|No| K[Index Transfer]
+    K --> L[Update Last Block]
+    L --> G
 ```
 
 ### Data Flow
