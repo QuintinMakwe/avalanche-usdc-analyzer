@@ -7,7 +7,6 @@ import { WebSocket } from 'ws';
 @Injectable()
 export abstract class EVMMonitorService {
   protected readonly logger = new Logger(this.constructor.name);
-  // protected provider: ethers.providers.WebSocketProvider;
   protected provider: WebSocketProvider;
   protected contracts: Map<string, Contract> = new Map();
   protected readonly BATCH_SIZE = 2000;
@@ -28,14 +27,12 @@ export abstract class EVMMonitorService {
   }
 
   protected async initializeProvider() {
-    // Use WebSocket provider instead of HTTP
     const rpcUrl = this.blockchainService.getRpcUrl(this.chainId)
-      .replace('https', 'wss')  // Convert HTTP to WebSocket URL
+      .replace('https', 'wss')
       .replace('http', 'ws');
     
     this.provider = new WebSocketProvider(rpcUrl);
-    
-    // Add reconnection logic
+  
     (this.provider.websocket as WebSocket).on('close', async () => {
       console.log('WebSocket disconnected, reconnecting...');
       await this.initializeProvider();
@@ -132,7 +129,7 @@ export abstract class EVMMonitorService {
                 this.logger.error(`Failed to get block data after ${maxRetries} retries`, error);
                 throw error;
               }
-              // Wait longer for block finalization
+              //wait longer for block finalization
               const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
               this.logger.warn(`Block not finalized yet, retrying in ${delay}ms`);
               await new Promise(resolve => setTimeout(resolve, delay));
