@@ -215,18 +215,20 @@ graph TD
 ### TokenTransfer
 
 ```sql
-CREATE TABLE TokenTransfer (
-   "id" TEXT PRIMARY KEY,
-    "transactionHash" TEXT UNIQUE,
-    "blockNumber" BIGINT,
-    "fromAddress" TEXT,
-    "toAddress" TEXT,
-    "amount" TEXT,
-    "timestamp" TIMESTAMP,
-    "tokenAddress" TEXT,
-    "symbol" TEXT,
-    "createdAt" TIMESTAMP DEFAULT NOW(),
-    "updatedAt" TIMESTAMP   
+CREATE TABLE "TokenTransfer" (
+    "transactionHash" TEXT NOT NULL,
+    "logIndex" INTEGER NOT NULL,
+    "blockNumber" BIGINT NOT NULL,
+    "fromAddress" TEXT NOT NULL,
+    "toAddress" TEXT NOT NULL,
+    "amount" TEXT NOT NULL,
+    "timestamp" TIMESTAMP NOT NULL,
+    "tokenAddress" TEXT NOT NULL,
+    "symbol" TEXT NOT NULL,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP NOT NULL,
+
+    CONSTRAINT "TokenTransfer_pkey" PRIMARY KEY ("transactionHash","logIndex")
 );
 
 CREATE INDEX "fromAddress_idx" ON "TokenTransfer"("fromAddress");
@@ -237,15 +239,16 @@ CREATE INDEX "tokenAddress_idx" ON "TokenTransfer"("tokenAddress");
 ### AddressTokenStats
 
 ```sql
-CREATE TABLE AddressTokenStats (
-    "address" TEXT,
-    "tokenAddress" TEXT,
-    "symbol" TEXT,
-    "totalSent" TEXT,
-    "totalReceived" TEXT,
-    "transactionCount" INTEGER,
-    "lastActive" TIMESTAMP,
-    PRIMARY KEY ("address", "tokenAddress")
+CREATE TABLE "AddressTokenStats" (
+    "address" TEXT NOT NULL,
+    "tokenAddress" TEXT NOT NULL,
+    "symbol" TEXT NOT NULL,
+    "totalSent" TEXT NOT NULL,
+    "totalReceived" TEXT NOT NULL,
+    "transactionCount" INTEGER NOT NULL,
+    "lastActive" TIMESTAMP NOT NULL,
+
+    CONSTRAINT "AddressTokenStats_pkey" PRIMARY KEY ("address","tokenAddress")
 );
 ```
 
