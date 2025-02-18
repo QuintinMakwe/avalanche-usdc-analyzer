@@ -68,7 +68,7 @@ Query Parameters:
 
 Response:
 
-```json
+
 {
     "data": {
         "stats": {
@@ -98,7 +98,6 @@ Query Parameters:
 
 Response:
 
-```json
 {
     "data": {
         "accounts": [
@@ -138,7 +137,6 @@ Query Parameters:
 
 Response:
 
-```json
 {
     "data": {
         "transfers": [
