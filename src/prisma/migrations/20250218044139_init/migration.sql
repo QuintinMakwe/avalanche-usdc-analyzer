@@ -29,36 +29,6 @@ CREATE TABLE "AddressTokenStats" (
     CONSTRAINT "AddressTokenStats_pkey" PRIMARY KEY ("address","tokenAddress")
 );
 
--- CreateTable
-CREATE TABLE "AddressStats" (
-    "address" TEXT NOT NULL,
-    "totalSent" TEXT NOT NULL,
-    "totalReceived" TEXT NOT NULL,
-    "transactionCount" INTEGER NOT NULL,
-    "lastActive" TIMESTAMP(3) NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "AddressStats_pkey" PRIMARY KEY ("address")
-);
-
--- CreateTable
-CREATE TABLE "BlockCheckpoint" (
-    "id" TEXT NOT NULL,
-    "lastBlock" BIGINT NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "BlockCheckpoint_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Config" (
-    "key" TEXT NOT NULL,
-    "value" TEXT NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Config_pkey" PRIMARY KEY ("key")
-);
-
 -- CreateIndex
 CREATE INDEX "TokenTransfer_fromAddress_idx" ON "TokenTransfer"("fromAddress");
 
@@ -73,12 +43,3 @@ CREATE UNIQUE INDEX "TokenTransfer_transactionHash_logIndex_key" ON "TokenTransf
 
 -- CreateIndex
 CREATE INDEX "AddressTokenStats_tokenAddress_idx" ON "AddressTokenStats"("tokenAddress");
-
--- CreateIndex
-CREATE INDEX "AddressStats_totalSent_idx" ON "AddressStats"("totalSent");
-
--- CreateIndex
-CREATE INDEX "AddressStats_totalReceived_idx" ON "AddressStats"("totalReceived");
-
--- CreateIndex
-CREATE INDEX "AddressStats_transactionCount_idx" ON "AddressStats"("transactionCount");
