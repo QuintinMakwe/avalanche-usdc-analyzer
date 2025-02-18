@@ -12,8 +12,7 @@ A service that monitors and indexes USDC transfers on the Avalanche network, pro
 
 ### Environment Variables
 
-```
-env
+```env
 # Blockchain RPC Configuration
 AVALANCHE_RPC_URL="https://rpc.ankr.com/avalanche/YOUR_API_KEY"
 AVALANCHE_NETWORK=mainnet
@@ -34,7 +33,6 @@ DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${
 PORT=3000
 ```
 
-
 ### Installation
 
 ```bash
@@ -48,7 +46,6 @@ docker-compose exec app npx prisma migrate deploy
 docker-compose logs -f app
 ```
 
-
 ## API Documentation
 
 ### Endpoints
@@ -56,8 +53,8 @@ docker-compose logs -f app
 #### 1. Get Transfer Statistics
 
 ```http
-
 GET /avalanche/transfer-stats
+```
 
 Query Parameters:
 - `startTime` (ISO Date) - Start time for statistics
@@ -67,8 +64,7 @@ Query Parameters:
 - `limit` (number, optional) - Items per page
 
 Response:
-
-
+```json
 {
     "data": {
         "stats": {
@@ -83,11 +79,11 @@ Response:
 }
 ```
 
-
 #### 2. Get Top Accounts
 
 ```http
 GET /avalanche/top-accounts
+```
 
 Query Parameters:
 - `startTime` (ISO Date) - Start time for statistics
@@ -97,7 +93,7 @@ Query Parameters:
 - `limit` (number, optional) - Items per page
 
 Response:
-
+```json
 {
     "data": {
         "accounts": [
@@ -127,6 +123,7 @@ Response:
 
 ```http
 GET /avalanche/transfers
+```
 
 Query Parameters:
 - `startTime` (ISO Date) - Start time for transfers
@@ -136,7 +133,7 @@ Query Parameters:
 - `limit` (number, optional) - Items per page
 
 Response:
-
+```json
 {
     "data": {
         "transfers": [
@@ -162,8 +159,6 @@ Response:
     "status": "success"
 }
 ```
-```
-
 
 ## Architecture Overview
 
@@ -172,14 +167,10 @@ Response:
 ```mermaid
 graph TD
     A[Monitor Service] -->|1. Subscribe to Events| B[Blockchain]
-    
     A -->|2. Transfer Events| C[Indexer Service]
-    
     C -->|3. Store Transfers| D[(PostgreSQL)]
     C -->|4. Update State| E[(Redis)]
-    
     F[Aggregation Service] -->|5. Query Data| D
-    
     G[API Layer] -->|6. Request Stats| F
     G -->|7. Response| H[Client]
 ```
