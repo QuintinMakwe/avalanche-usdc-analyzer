@@ -39,11 +39,8 @@ PORT=3000
 # Start the services
 docker-compose up -d
 
-# Run migrations
-docker-compose exec app npx prisma migrate deploy
-
 # View logs
-docker-compose logs -f app
+docker-compose logs -f avalanche-usdc-analyzer-api-1
 ```
 
 ## API Documentation
