@@ -12,8 +12,8 @@ export class BlockchainService {
 
   getProvider(chainId: string): ethers.JsonRpcProvider {
     if (!this.providers.has(chainId)) {
-      // const rpcUrl = this.configService.get<string>(`${chainId.toUpperCase()}_RPC_URL`);
-      const rpcUrl = "https://api.avax.network/ext/bc/C/rpc"
+      const rpcUrl = this.configService.get<string>(`${chainId.toUpperCase()}_RPC_URL`);
+
       if (!rpcUrl) {
         throw new Error(`No RPC URL configured for chain ${chainId}`);
       }
