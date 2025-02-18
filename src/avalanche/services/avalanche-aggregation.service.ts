@@ -122,4 +122,75 @@ export class AvalancheAggregationService {
       }
     };
   }
+
+  async getTransfersByTimeRange(
+    startTime: Date,
+    endTime: Date,
+    pagination: PaginationParams = {}
+  ) {
+    const { page = this.DEFAULT_PAGE, limit = this.DEFAULT_LIMIT } = pagination;
+    const skip = (page - 1) * limit;
+
+    try {
+      const [transfers, total] = await this.prisma.$transaction([
+        this.prisma.tokenTransfer.findMany({
+          where: {
+            createdAt: {
+              gte: startTime,
+              lte: endTime
+            },
+            tokenAddress: this.USDC_ADDRESS
+          },
+          orderBy: {
+            createdAt: 'desc'
+          },
+          skip,
+          take: limit,
+          select: {
+            id: true,
+            transactionHash: true,
+            logIndex: true,
+            blockNumber: true,
+            fromAddress: true,
+            toAddress: true,
+            amount: true,
+            timestamp: true,
+            tokenAddress: true,
+            symbol: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        }),
+        this.prisma.tokenTransfer.count({
+          where: {
+            createdAt: {
+              gte: startTime,
+              lte: endTime
+            },
+            tokenAddress: this.USDC_ADDRESS
+          }
+        })
+      ]);
+      
+      return {
+        transfers: transfers.map(transfer => ({
+          ...transfer,
+          blockNumber: Number(transfer.blockNumber),
+          amount: transfer.amount.toString(),
+          timestamp: new Date(transfer.timestamp).toISOString(),
+          createdAt: new Date(transfer.createdAt).toISOString(),
+          updatedAt: new Date(transfer.updatedAt).toISOString(),
+        })),
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit)
+        }
+      };
+    } catch (error) {
+      this.logger.error('Error fetching transfers by time range', error);
+      throw new Error(`Failed to fetch transfers: ${error.message}`);
+    }
+  }
 } 
