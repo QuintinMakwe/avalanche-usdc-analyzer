@@ -22,7 +22,12 @@ export class AvalancheController {
     if (startTime >= endTime) {
       throw new BadRequestException('startTime must be before endTime');
     }
-    return this.aggregationService.getTransferStats(startTime, endTime, this.USDC_ADDRESS, {});
+    const data = await this.aggregationService.getTransferStats(startTime, endTime, this.USDC_ADDRESS, {});
+    return {
+      data: data?.stats,
+      message: 'Transfer statistics fetched successfully', 
+      status: 'success'
+    };
   }
 
   @Get('top-accounts')
@@ -45,7 +50,13 @@ export class AvalancheController {
     if (page < 1 || limit < 1) {
       throw new BadRequestException('Invalid pagination parameters');
     }
-    return this.aggregationService.getTopAccounts(startTime, endTime, tokenAddress, { page, limit });
+    const data = await this.aggregationService.getTopAccounts(startTime, endTime, tokenAddress, { page, limit });
+    return {
+      data: data?.accounts,
+      pagination: data?.pagination,
+      message: 'Top accounts fetched successfully',
+      status: 'success'
+    };
   }
 
   @Get('transfers')
@@ -66,6 +77,12 @@ export class AvalancheController {
     if (page < 1 || limit < 1) {
       throw new BadRequestException('Invalid pagination parameters');
     }
-    return this.aggregationService.getTransfersByTimeRange(startTime, endTime, { page, limit });
+    const data = await this.aggregationService.getTransfersByTimeRange(startTime, endTime, { page, limit });
+    return {
+      data: data?.transfers,
+      pagination: data?.pagination,
+      message: 'Transfers fetched successfully',
+      status: 'success'
+    };
   }
 } 
