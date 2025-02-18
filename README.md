@@ -258,13 +258,13 @@ CREATE TABLE "AddressTokenStats" (
 - Updates address statistics atomically
 - Records last indexed block
 
-### Catch-up Mechanism(Not Implemented)
+### Catch-up Mechanism
 - Runs parallel to real-time monitoring
 - Processes historical blocks in batches
 - Handles duplicates through database constraints
 - Updates block checkpoint atomically
 
-### Block Tracking(Not Implemented)
+### Block Tracking
 - Redis maintains last indexed block
 - Atomic updates prevent race conditions
 - Supports system recovery after downtime
