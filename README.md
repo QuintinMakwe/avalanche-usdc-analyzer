@@ -40,7 +40,7 @@ PORT=3000
 docker-compose up -d
 
 # View logs
-docker-compose logs -f avalanche-usdc-analyzer-api-1
+docker logs -f avalanche-usdc-analyzer-api-1
 ```
 
 ## API Documentation
